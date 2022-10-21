@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "**.zig"
+  pull_request:
+    branches: [master]
+    paths:
+      - "**.zig"
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  run:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v1.3.0
+        with:
+          version: 0.9.1
+      - name: Check environment
+        run: |
+          zig env
+      - name: Run Dizzy
+        run: |
+          zig build run -- src/quine.b -cs 512 -ds 1024
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v1.3.0
+        with:
+          version: 0.9.1
+      - name: Check environment
+        run: |
+          zig env
+      - name: Test Dizzy
+        run: |
+          zig build test
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v1.3.0
+        with:
+          version: 0.9.1
+      - name: Run linter
+        run: |
+          zig fmt --check .
