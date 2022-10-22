@@ -18,7 +18,7 @@ pub fn build(b: *Builder) void {
     const run_step = b.step("run", "Run Dizzy");
     run_step.dependOn(&run_cmd.step);
 
-    const test_exe = b.addTest("src/main.zig");
+    const test_exe = b.addTest("src/dizzy.zig");
     test_exe.setBuildMode(mode);
     exe.setTarget(target);
 
